@@ -1,0 +1,107 @@
+/* Footer Styling */
+.footer {
+    background: #f8f9fa;
+    padding: 20px 40px;
+    font-family: Arial, sans-serif;
+    color: #212529;
+}
+
+/* Top Section */
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 15px;
+}
+
+/* Left Section */
+.footer-left p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.footer-left img {
+    width: 100px;
+    margin-top: 5px;
+}
+
+/* Center Links */
+.footer-links {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+}
+
+.footer-links li {
+    display: inline;
+}
+
+.footer-links a {
+    text-decoration: none;
+    color: #212529;
+    font-size: 14px;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+/* Right Section (Currency Selector) */
+.footer-right label {
+    font-size: 14px;
+    margin-right: 8px;
+}
+
+.footer-right select {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+/* Bottom Section */
+.footer-bottom {
+    text-align: center;
+    padding-top: 15px;
+}
+
+/* Social Icons */
+.social-icons {
+    margin: 10px 0;
+}
+
+.social-icons a {
+    margin: 0 5px;
+    font-size: 18px;
+    color: #212529;
+    text-decoration: none;
+}
+
+.social-icons a:hover {
+    color: #ffc107;
+}
+
+.footer-bottom p {
+    font-size: 13px;
+    color: #6c757d;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .footer-links {
+        justify-content: center;
+        margin: 10px 0;
+    }
+
+    .footer-right {
+        margin-top: 10px;
+    }
+}

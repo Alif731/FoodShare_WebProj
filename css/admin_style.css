@@ -1,0 +1,149 @@
+/* Basic Admin Styles */
+body.admin { /* Optional: Add class="admin" to body tag in admin_header if needed */
+    background-color: #f8f9fa; /* Light grey background for admin */
+}
+
+.admin-header .navbar {
+    background-color: #343a40; /* Dark background for admin nav */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.admin-header .navbar .logo {
+    color: #ffffff;
+    font-size: 1.4rem;
+}
+.admin-header .navbar .logo:hover {
+    color: #e9ecef;
+}
+
+.admin-header .nav-links a {
+    color: #adb5bd; /* Lighter grey for links */
+}
+
+.admin-header .nav-links a:hover,
+.admin-header .nav-links a.active { /* Add 'active' class via PHP if needed */
+    color: #ffffff;
+}
+.admin-header .nav-links li:last-child a { /* Logout link emphasis */
+     color: #ffc107; /* Yellowish color for logout */
+}
+
+
+.admin-main {
+    padding: 30px 0;
+}
+
+.admin-main h2, .admin-main h3 {
+    color: #495057;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 10px;
+}
+
+/* Dashboard Stats Boxes */
+.admin-stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.admin-stat-box {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.admin-stat-box .count {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #007bff; /* Blue count */
+    display: block;
+    margin-bottom: 5px;
+}
+
+.admin-stat-box .label {
+    font-size: 0.95rem;
+    color: #6c757d; /* Grey label */
+}
+
+/* Tables */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.admin-table th,
+.admin-table td {
+    border: 1px solid #dee2e6;
+    padding: 10px 12px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.admin-table thead th {
+    background-color: #e9ecef; /* Light header for tables */
+    font-weight: bold;
+    color: #495057;
+}
+
+.admin-table tbody tr:nth-child(even) {
+    background-color: #f8f9fa; /* Zebra striping */
+}
+
+.admin-table td .action-button {
+     margin-right: 5px; /* Space between buttons */
+     padding: 5px 8px;
+     font-size: 0.85em;
+}
+.admin-table td form {
+    display: inline-block; /* Keep buttons on same line */
+    margin: 0;
+}
+
+/* Specific button colors for admin actions */
+.btn-approve { background-color: #28a745; color: white; border: none; }
+.btn-approve:hover { background-color: #218838; }
+.btn-reject { background-color: #dc3545; color: white; border: none; }
+.btn-reject:hover { background-color: #c82333; }
+.btn-view { background-color: #17a2b8; color: white; border: none; }
+.btn-view:hover { background-color: #138496; }
+
+
+.admin-section {
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.admin-footer {
+    background: #e9ecef;
+    color: #6c757d;
+    text-align: center;
+    padding: 15px 0;
+    margin-top: 30px;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Small status indicators */
+.status-label {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+    color: white;
+    display: inline-block;
+}
+.status-label-pending { background-color: #ffc107; color: #333; }
+.status-label-approved { background-color: #28a745; }
+.status-label-assigned { background-color: #17a2b8; }
+.status-label-collected { background-color: #007bff; }
+.status-label-delivered { background-color: #6c757d; } /* Grey for delivered? Or green? */
+.status-label-cancelled { background-color: #dc3545; }

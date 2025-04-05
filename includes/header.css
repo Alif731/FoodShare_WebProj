@@ -1,0 +1,102 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 🌟 Navbar Styling */
+.navbar {
+    position: fixed;                  /* Fixes the navbar */
+    top: 0;                           /* Sticks to the top */
+    left: 0;
+    width: 100%;
+    z-index: 1000;                    /* Keeps navbar on top of other content */
+    background: #fff;                  /* Background color */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Adds subtle shadow */
+    padding: 15px 50px;               /* Consistent padding */
+}
+
+
+
+
+.nav-item a {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: black;
+    text-decoration: none;             /* Removes underline */
+    transition: color 0.3s;
+}
+
+
+
+.navbar-nav a:hover {
+    color: #61a0ff;                   /* Hover color */
+}
+
+/* 🌟 Navbar Menu Items */
+.navbar-nav li {
+    padding-left: 10px;
+}
+
+.btn-custom-orange {
+    background-color: #ff8c00 !important;
+    border-color: #ff8c00 !important;
+    color: #fff !important;
+  }
+
+.btn-custom-orange:hover {
+    background-color: #e07b00 !important;
+    border-color: #e07b00 !important;
+}
+/* 🌟 Separator */
+.separator {
+    width: 2px;
+    height: 70%;
+    background-color: #ccc;
+    display: inline-block;
+}
+
+/* 🌟 Page Content */
+.content {
+    padding-top: 100px;                /* Prevents content from being hidden under the navbar */
+}
+
+/* 🌟 Responsive Design */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 15px 30px;
+    }
+
+    .navbar-nav li {
+        padding-left: 20px;
+    }
+
+    .btn_donate, .sign_btn {
+        width: auto;
+        padding: 10px 15px;
+    }
+
+    .content {
+        padding-top: 80px;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar {
+        padding: 10px 20px;
+    }
+
+    .side_btn {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn_donate {
+        width: 100%;
+    }
+
+    .content {
+        padding-top: 60px;
+    }
+}
