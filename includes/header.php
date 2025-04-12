@@ -55,7 +55,7 @@
                         <li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
                     <?php else: ?>
                         <li class="nav-item"> <button id="sign_btn" class="btn btn-outline-primary me-2" onclick="window.location.href='login.php'"  onclick="closeNavbar()">Login</button></li>
-                        <li class="nav-item"><button type="button" onclick="window.location.href='login.php'" class="btn btn-warning btn-custom-orange" onclick="closeNavbar()">Sign Up</button></li>
+                        <li class="nav-item"><button type="button" onclick="window.location.href='signup.php'" class="btn btn-warning btn-custom-orange" onclick="closeNavbar()">Sign Up</button></li>
                     <?php endif; ?>
       </ul>
       

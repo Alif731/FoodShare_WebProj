@@ -169,7 +169,7 @@ body {
 
 
 
-.scroll-btn{
+/* .scroll-btn{
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -201,7 +201,7 @@ body {
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s, visibility 0.3s; 
-}
+} */
 
 
 /* Forms */
@@ -263,12 +263,66 @@ body {
     color: white;
     text-decoration: none; /* If using <a> tags */
     margin-left: 5px;
-}
-.btn-accept { background-color: #28a745; } /* Green */
+ }
+.btn-accept { background-color: #28a745; } 
 .btn-accept:hover { background-color: #218838; }
-.btn-collected { background-color: #007bff; } /* Blue */
+.btn-collected { background-color: #007bff; } 
 .btn-collected:hover { background-color: #0056b3; }
-.btn-delivered { background-color: #ffc107; color: #333;} /* Yellow */
+.btn-delivered { background-color: #ffc107; color: #333;} 
 .btn-delivered:hover { background-color: #e0a800; }
-.btn-details { background-color: #6c757d; } /* Grey */
+.btn-details { background-color: #6c757d; } 
 .btn-details:hover { background-color: #5a6268; }
+
+/* Centered Signup Container */
+.signup-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100vh; /* Full viewport height */
+    background: linear-gradient(to right, #ff8c00, #e07b00); /* Optional gradient background */
+    color: #fff;
+}
+
+.signup-container h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+}
+
+.signup-container p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+/* Dropdown Styling */
+.signup-dropdown {
+    width: 300px;
+    padding: 12px 15px;
+    font-size: 1.2rem;
+    color: #333;
+    background: #fff;
+    border: 2px solid #ff8c00;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.signup-dropdown:hover {
+    border-color: #e07b00;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.signup-dropdown:focus {
+    border-color: #e07b00;
+    box-shadow: 0 0 10px rgba(224, 123, 0, 0.5);
+}
+
+.signup-dropdown option {
+    font-size: 1rem;
+    padding: 10px;
+}
+

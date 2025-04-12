@@ -18,7 +18,7 @@
 }
 
 .scroll-btn:hover {
-    background-color: #ff9900; /* Darker green on hover */
+    background-color: #ff9900; 
     transform: scale(1.1);
 }
 
