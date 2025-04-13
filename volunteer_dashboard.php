@@ -208,7 +208,7 @@ try {
                                     </td>
                                     <td><?php echo htmlspecialchars($task['quantity'] ?: '-'); ?></td>
                                     <td>
-                                        <?php echo htmlspecialchars($task['donor_city'] ?: 'N/A'); ?>
+                                        <?php echo htmlspecialchars($task['pickup_address'] ?: 'N/A'); ?>
                                         <small class="d-block text-muted">Pref: <?php echo htmlspecialchars($task['pickup_time_preference'] ?: 'Any'); ?></small>
                                     </td>
                                     <td><small><?php echo date("M d, Y H:i", strtotime($task['created_at'])); ?></small></td>
