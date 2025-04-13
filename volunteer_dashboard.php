@@ -156,86 +156,162 @@ try {
 
 <?php include 'includes/header.php'; ?>
 
-<div class="container dashboard-container">
-    <h2>Welcome, <?php echo htmlspecialchars($_SESSION['first_name']); ?>! (Volunteer Dashboard)</h2>
+<div class="container mt-4 mb-5"> <!-- Bootstrap Container -->
+    <h2 class="mb-4">Welcome, <?php echo htmlspecialchars($_SESSION['first_name']); ?>! (Volunteer)</h2>
 
-     <?php if (!empty($errors)): ?>
-        <div class="error-message">
-            <?php foreach ($errors as $error): ?><p><?php echo htmlspecialchars($error); ?></p><?php endforeach; ?>
+    <!-- Display Feedback Messages -->
+    <?php if (!empty($errors)): ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Error!</strong>
+            <ul>
+                <?php foreach ($errors as $error): ?>
+                    <li><?php echo htmlspecialchars($error); ?></li>
+                <?php endforeach; ?>
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     <?php endif; ?>
     <?php if ($success_message): ?>
-        <div class="success-message"><p><?php echo htmlspecialchars($success_message); ?></p></div>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <?php echo htmlspecialchars($success_message); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     <?php endif; ?>
 
+
     <!-- Available Tasks -->
-    <div class="dashboard-box">
-        <h3>Available Donation Pickups</h3>
-        <?php if (empty($available_tasks)): ?>
-            <p>No pending donations available right now. Check back later!</p>
-        <?php else: ?>
-            <ul class="task-list">
-                <?php foreach ($available_tasks as $task): ?>
-                    <li>
-                        <div>
-                            <strong><?php echo htmlspecialchars($task['food_description']); ?></strong> (<?php echo htmlspecialchars($task['quantity'] ?: 'N/A'); ?>)<br>
-                            <small>From: <?php echo htmlspecialchars($task['donor_name']); ?></small><br>
-                            <small>Location: <?php echo htmlspecialchars($task['pickup_address']); ?></small><br>
-                            <small>Preference: <?php echo htmlspecialchars($task['pickup_time_preference'] ?: 'Any'); ?></small><br>
-                             <small>Listed: <?php echo date("M d, Y H:i", strtotime($task['created_at'])); ?></small>
-                        </div>
-                        <form action="volunteer_dashboard.php" method="POST" style="display: inline;">
-                            <input type="hidden" name="donation_id" value="<?php echo $task['donation_id']; ?>">
-                            <button type="submit" name="accept_task" class="action-button btn-accept">Accept Task</button>
-                        </form>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        <?php endif; ?>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0"><i class="bi bi-search me-2"></i>Available Donation Pickups</h5>
+        </div>
+        <div class="card-body p-0">
+            <?php if (empty($available_tasks)): ?>
+                <p class="text-center text-muted p-3">No pending donations available right now. Check back later!</p>
+            <?php else: ?>
+                 <div class="table-responsive">
+                    <table class="table table-hover table-sm mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Description</th>
+                                <th>Qty</th>
+                                <th>Location (General)</th>
+                                <th>Listed</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($available_tasks as $task): ?>
+                                <tr>
+                                    <td title="<?php echo htmlspecialchars($task['food_description']); ?>">
+                                        <?php echo htmlspecialchars(mb_strimwidth($task['food_description'], 0, 50, "...")); ?>
+                                        <small class="d-block text-muted">From: <?php echo htmlspecialchars($task['donor_name']); ?></small>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($task['quantity'] ?: '-'); ?></td>
+                                    <td>
+                                        <?php echo htmlspecialchars($task['donor_city'] ?: 'N/A'); ?>
+                                        <small class="d-block text-muted">Pref: <?php echo htmlspecialchars($task['pickup_time_preference'] ?: 'Any'); ?></small>
+                                    </td>
+                                    <td><small><?php echo date("M d, Y H:i", strtotime($task['created_at'])); ?></small></td>
+                                    <td class="text-center">
+                                        <form action="volunteer_dashboard.php" method="POST" style="display: inline;">
+                                            <input type="hidden" name="donation_id" value="<?php echo $task['donation_id']; ?>">
+                                            <button type="submit" name="accept_task" class="btn btn-success btn-sm" title="Accept Task">
+                                                <i class="bi bi-check-lg me-1"></i> Accept
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
+
 
     <!-- My Assigned/Completed Tasks -->
-    <div class="dashboard-box">
-         <h3>Your Assigned & Completed Tasks</h3>
-         <?php if (empty($my_tasks)): ?>
-            <p>You have not accepted any tasks yet.</p>
-        <?php else: ?>
-            <ul class="task-list">
-                <?php foreach ($my_tasks as $task): ?>
-                     <li>
-                        <div>
-                             <strong><?php echo htmlspecialchars($task['food_description']); ?></strong> (<?php echo htmlspecialchars($task['quantity'] ?: 'N/A'); ?>)<br>
-                             <small>From: <?php echo htmlspecialchars($task['donor_name']); ?> (Phone: <?php echo htmlspecialchars($task['donor_phone'] ?: 'N/A'); ?>)</small><br>
-                             <small>Pickup Address: <?php echo htmlspecialchars($task['pickup_address']); ?></small><br>
-                             <small>Status: <span class="donation-status status-<?php echo htmlspecialchars($task['status']); ?>"><?php echo ucfirst(htmlspecialchars($task['status'])); ?></span></small><br>
-                             <?php if($task['collection_time']): ?><small>Collected: <?php echo date("M d, Y H:i", strtotime($task['collection_time'])); ?></small><br><?php endif; ?>
-                             <?php if($task['delivery_time']): ?><small>Delivered: <?php echo date("M d, Y H:i", strtotime($task['delivery_time'])); ?></small><?php endif; ?>
-                        </div>
-                        <div> <!-- Action buttons -->
-                            <?php if ($task['status'] === 'assigned'): ?>
-                                <form action="volunteer_dashboard.php" method="POST" style="display: inline;">
-                                    <input type="hidden" name="donation_id" value="<?php echo $task['donation_id']; ?>">
-                                    <button type="submit" name="mark_collected" class="action-button btn-collected">Mark Collected</button>
-                                </form>
-                            <?php elseif ($task['status'] === 'collected'): ?>
-                                <form action="volunteer_dashboard.php" method="POST" style="display: inline;">
-                                     <input type="hidden" name="donation_id" value="<?php echo $task['donation_id']; ?>">
-                                    <button type="submit" name="mark_delivered" class="action-button btn-delivered">Mark Delivered</button>
-                                </form>
-                            <?php endif; ?>
-                             <!-- Add button/link for details/notes if needed -->
-                        </div>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        <?php endif; ?>
+    <div class="card shadow-sm">
+         <div class="card-header">
+             <h5 class="mb-0"><i class="bi bi-person-check-fill me-2"></i>Your Assigned & Completed Tasks</h5>
+        </div>
+        <div class="card-body p-0">
+             <?php if (empty($my_tasks)): ?>
+                <p class="text-center text-muted p-3">You have not accepted any tasks yet.</p>
+            <?php else: ?>
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm mb-0 align-middle">
+                         <thead class="table-light">
+                            <tr>
+                                <th>Description</th>
+                                <th>Donor Info</th>
+                                <th>Pickup Address</th>
+                                <th>Status</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($my_tasks as $task):
+                                // Determine badge color based on status
+                                $status_class = 'secondary'; // Default
+                                switch ($task['status']) {
+                                    case 'pending': $status_class = 'warning text-dark'; break;
+                                    case 'assigned': $status_class = 'info text-dark'; break;
+                                    case 'collected': $status_class = 'primary'; break;
+                                    case 'delivered': $status_class = 'success'; break;
+                                    case 'cancelled': $status_class = 'danger'; break;
+                                }
+                             ?>
+                                 <tr>
+                                    <td title="<?php echo htmlspecialchars($task['food_description']); ?>">
+                                        <?php echo htmlspecialchars(mb_strimwidth($task['food_description'], 0, 45, "...")); ?>
+                                        <small class="d-block text-muted">Qty: <?php echo htmlspecialchars($task['quantity'] ?: '-'); ?></small>
+                                    </td>
+                                    <td>
+                                        <?php echo htmlspecialchars($task['donor_name']); ?>
+                                        <small class="d-block text-muted"><i class="bi bi-telephone-fill me-1"></i><?php echo htmlspecialchars($task['donor_phone'] ?: 'N/A'); ?></small>
+                                    </td>
+                                     <td title="<?php echo htmlspecialchars($task['pickup_address']); ?>">
+                                         <?php echo htmlspecialchars(mb_strimwidth($task['pickup_address'], 0, 40, "...")); ?>
+                                         <small class="d-block text-muted">Pref: <?php echo htmlspecialchars($task['pickup_time_preference'] ?: 'Any'); ?></small>
+                                     </td>
+                                    <td>
+                                        <span class="badge bg-<?php echo $status_class; ?>"><?php echo ucfirst(htmlspecialchars($task['status'])); ?></span>
+                                        <?php if($task['collection_time']): ?><small class="d-block text-muted">Collected: <?php echo date("d/m H:i", strtotime($task['collection_time'])); ?></small><?php endif; ?>
+                                        <?php if($task['delivery_time']): ?><small class="d-block text-muted">Delivered: <?php echo date("d/m H:i", strtotime($task['delivery_time'])); ?></small><?php endif; ?>
+                                    </td>
+                                    <td class="text-center action-buttons">
+                                        <?php if ($task['status'] === 'assigned'): ?>
+                                            <form action="volunteer_dashboard.php" method="POST" style="display: inline;">
+                                                <input type="hidden" name="donation_id" value="<?php echo $task['donation_id']; ?>">
+                                                <button type="submit" name="mark_collected" class="btn btn-primary btn-sm" title="Mark as Collected">
+                                                    <i class="bi bi-box-arrow-down me-1"></i> Collected
+                                                </button>
+                                            </form>
+                                        <?php elseif ($task['status'] === 'collected'): ?>
+                                            <form action="volunteer_dashboard.php" method="POST" style="display: inline;">
+                                                 <input type="hidden" name="donation_id" value="<?php echo $task['donation_id']; ?>">
+                                                <button type="submit" name="mark_delivered" class="btn btn-warning btn-sm text-dark" title="Mark as Delivered">
+                                                    <i class="bi bi-truck me-1"></i> Delivered
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
+                                         <a href="#" class="btn btn-secondary btn-sm" title="View Full Details"><i class="bi bi-info-circle"></i></a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
 
-     <div class="dashboard-box">
-        <h3>Account</h3>
-        <p><a href="#">Edit Profile</a> | <a href="logout.php">Logout</a></p>
-     </div>
+     <!-- Account Actions -->
+     <!-- <div class="mt-4 text-center">
+        <a href="#" class="btn btn-outline-secondary btn-sm">Edit Profile</a>
+     </div> -->
 
-</div>
+</div> <!-- /.container -->
 
-<?php include 'includes/footer.php'; ?>
+<?php require_once 'includes/footer.php'; ?>

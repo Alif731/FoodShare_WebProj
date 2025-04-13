@@ -1,20 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <!-- cdn-js -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="includes/footer.css">
-    <title>Document</title>
-</head>
-<body>
+
 <footer class="footer">
     <div class="footer-container">
         <!-- Left Section -->
         <div class="footer-left">
-            <p>Part of the United Nations WFP</p>
-            <img src="https://www.logo.wine/a/logo/World_Food_Programme/World_Food_Programme-Logo.wine.svg" alt="World Food Programme">
+            <p>FoodShare Connect</p>
+            <img src="./images/FoodShare_logo.svg" alt="image" viewbox="0 0 24 24" width="70" height="70">
+
         </div>
 
         <!-- Center Links -->
@@ -38,5 +29,8 @@
         <p>ShareTheMeal © 2025</p>
     </div>
 </footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<script src="js/script.js"></script>
+
 </body>
 </html>

@@ -1,8 +1,8 @@
 <?php
-require_once 'includes/admin_header.php';
+require_once 'includes/admin_header.php'; // Includes Bootstrap, navbar, sidebar
 
 $feedback_message = '';
-$feedback_type = ''; // 'success' or 'error'
+$feedback_type = ''; // 'success' or 'danger' for Bootstrap alert classes
 
 // --- Handle Volunteer Approval/Rejection Actions ---
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && isset($_POST['user_id'])) {
@@ -12,50 +12,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && isset($_P
     if ($user_id) {
         try {
             if ($action === 'approve') {
-                // Approve the volunteer
                 $sql = "UPDATE users SET is_approved = 1 WHERE user_id = :user_id AND role = 'volunteer' AND is_approved = 0";
                 $stmt = $pdo->prepare($sql);
                 $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
                 if ($stmt->execute() && $stmt->rowCount() > 0) {
-                    $feedback_message = "Volunteer approved successfully.";
+                    $feedback_message = "Volunteer (#" . $user_id . ") approved successfully.";
                     $feedback_type = 'success';
-                    // TODO: Optionally send an email notification to the volunteer
-                } else {
-                    $feedback_message = "Failed to approve volunteer (already approved or doesn't exist?).";
-                    $feedback_type = 'error';
-                }
+                } else { $feedback_message = "Failed to approve volunteer."; $feedback_type = 'danger'; }
             } elseif ($action === 'reject') {
-                // Reject (Delete) the volunteer - Use with caution!
-                // Alternative: Set is_approved = -1 or similar if you want to keep the record
                 $sql = "DELETE FROM users WHERE user_id = :user_id AND role = 'volunteer' AND is_approved = 0";
                  $stmt = $pdo->prepare($sql);
                  $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
                  if ($stmt->execute() && $stmt->rowCount() > 0) {
-                    $feedback_message = "Volunteer rejected and removed successfully.";
+                    $feedback_message = "Volunteer (#" . $user_id . ") rejected and removed successfully.";
                     $feedback_type = 'success';
-                     // TODO: Optionally send an email notification
-                 } else {
-                    $feedback_message = "Failed to reject volunteer (already approved/rejected or doesn't exist?).";
-                    $feedback_type = 'error';
-                 }
-            } else {
-                 $feedback_message = "Invalid action.";
-                 $feedback_type = 'error';
-            }
+                 } else { $feedback_message = "Failed to reject volunteer."; $feedback_type = 'danger'; }
+            } else { $feedback_message = "Invalid action."; $feedback_type = 'danger'; }
         } catch (PDOException $e) {
             error_log("Volunteer action failed: " . $e->getMessage());
-            $feedback_message = "Database error during volunteer action.";
-            $feedback_type = 'error';
+            $feedback_message = "Database error during volunteer action."; $feedback_type = 'danger';
         }
-    } else {
-        $feedback_message = "Invalid user ID.";
-        $feedback_type = 'error';
-    }
-
-    // Optional: Redirect after POST to prevent resubmission (PRG pattern)
-    // This makes feedback slightly trickier (use sessions or query params)
-    // header("Location: manage_volunteers.php?feedback=" . urlencode($feedback_message) . "&type=" . $feedback_type);
-    // exit;
+    } else { $feedback_message = "Invalid user ID."; $feedback_type = 'danger'; }
 }
 
 // --- Fetch Pending Volunteers ---
@@ -63,115 +40,106 @@ $pending_volunteers = [];
 try {
     $stmt_pending = $pdo->query("SELECT user_id, first_name, last_name, email, phone, registration_date FROM users WHERE role = 'volunteer' AND is_approved = 0 ORDER BY registration_date ASC");
     $pending_volunteers = $stmt_pending->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    error_log("Fetch pending volunteers error: " . $e->getMessage());
-    echo "<div class='error-message'>Could not load pending volunteers.</div>";
-}
+} catch (PDOException $e) { error_log("Fetch pending volunteers error: " . $e->getMessage()); $feedback_message = "Could not load pending volunteers."; $feedback_type = 'danger'; }
 
 // --- Fetch Approved Volunteers ---
 $approved_volunteers = [];
 try {
     $stmt_approved = $pdo->query("SELECT user_id, first_name, last_name, email, phone, registration_date FROM users WHERE role = 'volunteer' AND is_approved = 1 ORDER BY first_name ASC");
     $approved_volunteers = $stmt_approved->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-     error_log("Fetch approved volunteers error: " . $e->getMessage());
-    echo "<div class='error-message'>Could not load approved volunteers.</div>";
-}
+} catch (PDOException $e) { error_log("Fetch approved volunteers error: " . $e->getMessage()); $feedback_message = "Could not load approved volunteers."; $feedback_type = 'danger'; }
 ?>
 
-<!-- Page Title -->
-<h2>Manage Volunteers</h2>
-
-<!-- Page Header Actions (Example) -->
-<div class="page-header-actions">
-    <a href="#" class="btn btn-success"><i class="fa-solid fa-plus"></i> Add Volunteer</a>
-    <button class="btn btn-secondary" disabled><i class="fa-solid fa-filter"></i> Filter</button>
-    <button class="btn btn-info" disabled><i class="fa-solid fa-file-export"></i> Export</button>
+<!-- Page Title & Header -->
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Manage Volunteers</h1>
+     <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-sm btn-outline-success" disabled><i class="bi bi-person-plus-fill me-1"></i> Add Volunteer</button>
+    </div>
 </div>
 
-<!-- Pending Volunteers Section -->
-<div class="admin-card">
-    <div class="admin-card-header">
-        <h3>Pending Volunteer Applications</h3>
+<!-- Display Feedback Message -->
+<?php if ($feedback_message): ?>
+    <div class="alert alert-<?php echo $feedback_type; ?> alert-dismissible fade show" role="alert">
+        <?php echo htmlspecialchars($feedback_message); ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    <div class="admin-card-body">
-        <?php if ($feedback_message && $feedback_type == 'error' && strpos($feedback_message, 'pending') !== false): ?>
-            <div class="error-message"><?php echo htmlspecialchars($feedback_message); ?></div>
-        <?php elseif ($feedback_message && $feedback_type == 'success' && strpos($feedback_message, 'pending') !== false): ?>
-             <div class="success-message"><?php echo htmlspecialchars($feedback_message); ?></div>
-        <?php endif; ?>
+<?php endif; ?>
 
+
+<!-- Pending Volunteers Card -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-warning">
+        <h5 class="mb-0"><i class="bi bi-hourglass-split me-2"></i>Pending Volunteer Applications</h5>
+    </div>
+    <div class="card-body">
         <?php if (empty($pending_volunteers)): ?>
-            <p>No pending volunteer applications.</p>
+            <p class="text-center text-muted">No pending volunteer applications.</p>
         <?php else: ?>
-            <div class="admin-table-responsive">
-                <table class="admin-table">
-                    <thead>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover table-sm align-middle">
+                    <thead class="table-light">
                         <tr>
-                            <th><input type="checkbox" id="selectAllPending" title="Select All"></th> <!-- Checkbox -->
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Registered On</th>
-                            <th>Actions</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Phone</th>
+                            <th scope="col">Registered On</th>
+                            <th scope="col" class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($pending_volunteers as $volunteer): ?>
                             <tr>
-                                <td><input type="checkbox" name="selected_pending[]" value="<?php echo $volunteer['user_id']; ?>"></td>
                                 <td><?php echo htmlspecialchars($volunteer['first_name'] . ' ' . $volunteer['last_name']); ?></td>
                                 <td><?php echo htmlspecialchars($volunteer['email']); ?></td>
-                                <td><?php echo htmlspecialchars($volunteer['phone'] ?: 'N/A'); ?></td>
-                                <td><?php echo date("Y-m-d H:i", strtotime($volunteer['registration_date'])); ?></td>
-                                <td class="action-buttons">
-                                    <form action="manage_volunteers.php" method="POST" style="display: inline;">
+                                <td><?php echo htmlspecialchars($volunteer['phone'] ?: '-'); ?></td>
+                                <td><small><?php echo date("Y-m-d H:i", strtotime($volunteer['registration_date'])); ?></small></td>
+                                <td class="text-center action-buttons">
+                                    <form action="manage_volunteers.php" method="POST">
                                         <input type="hidden" name="user_id" value="<?php echo $volunteer['user_id']; ?>">
-                                        <button type="submit" name="action" value="approve" class="btn-approve" title="Approve">
-                                            <i class="fa-solid fa-check"></i>
+                                        <button type="submit" name="action" value="approve" class="btn btn-link text-success p-0 me-1" title="Approve">
+                                            <i class="bi bi-check-circle-fill fs-5"></i>
                                         </button>
                                     </form>
-                                    <form action="manage_volunteers.php" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to reject and remove this volunteer application?');">
+                                    <form action="manage_volunteers.php" method="POST" onsubmit="return confirm('Are you sure you want to reject and remove this volunteer application?');">
                                         <input type="hidden" name="user_id" value="<?php echo $volunteer['user_id']; ?>">
-                                        <button type="submit" name="action" value="reject" class="btn-reject" title="Reject">
-                                            <i class="fa-solid fa-trash-alt"></i>
+                                        <button type="submit" name="action" value="reject" class="btn btn-link text-danger p-0 me-1" title="Reject">
+                                            <i class="bi bi-trash-fill fs-5"></i>
                                         </button>
                                     </form>
-                                    <a href="#" class="btn-view" title="View Details (Not implemented)"><i class="fa-solid fa-eye"></i></a>
+                                    <a href="#" class="text-secondary p-0" title="View Details (Not implemented)"><i class="bi bi-eye-fill fs-5"></i></a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
-             <!-- Add Table Footer if needed -->
-             <div class="table-footer">
-                 <span>Showing <?php echo count($pending_volunteers); ?> entries</span>
-                 <!-- Add pagination controls here later -->
+             <!-- Table Footer -->
+             <div class="d-flex justify-content-between align-items-center mt-2">
+                 <small class="text-muted">Showing <?php echo count($pending_volunteers); ?> pending <?php echo (count($pending_volunteers) === 1) ? 'application' : 'applications'; ?></small>
              </div>
         <?php endif; ?>
     </div>
 </div>
 
-
-<!-- Approved Volunteers Section -->
-<div class="admin-card" id="approved">
-     <div class="admin-card-header">
-        <h3>Approved Volunteers</h3>
+<!-- Approved Volunteers Card -->
+<div class="card shadow-sm" id="approved">
+     <div class="card-header bg-success text-white">
+        <h5 class="mb-0"><i class="bi bi-person-check-fill me-2"></i>Approved Volunteers</h5>
     </div>
-     <div class="admin-card-body">
+     <div class="card-body">
          <?php if (empty($approved_volunteers)): ?>
-            <p>No approved volunteers found.</p>
+            <p class="text-center text-muted">No approved volunteers found.</p>
         <?php else: ?>
-             <div class="admin-table-responsive">
-                <table class="admin-table">
-                    <thead>
+             <div class="table-responsive">
+                <table class="table table-striped table-hover table-sm align-middle">
+                     <thead class="table-light">
                         <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Registered On</th>
-                            <th>Actions</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Phone</th>
+                            <th scope="col">Registered On</th>
+                            <th scope="col" class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -179,23 +147,23 @@ try {
                             <tr>
                                 <td><?php echo htmlspecialchars($volunteer['first_name'] . ' ' . $volunteer['last_name']); ?></td>
                                 <td><?php echo htmlspecialchars($volunteer['email']); ?></td>
-                                <td><?php echo htmlspecialchars($volunteer['phone'] ?: 'N/A'); ?></td>
-                                <td><?php echo date("Y-m-d", strtotime($volunteer['registration_date'])); ?></td>
-                                <td class="action-buttons">
-                                   <a href="#" class="btn-view" title="View Details (Not implemented)"><i class="fa-solid fa-eye"></i></a>
-                                   <button class="btn-reject" disabled title="Deactivate (Not implemented)"><i class="fa-solid fa-user-slash"></i></button>
+                                <td><?php echo htmlspecialchars($volunteer['phone'] ?: '-'); ?></td>
+                                <td><small><?php echo date("Y-m-d", strtotime($volunteer['registration_date'])); ?></small></td>
+                                <td class="text-center action-buttons">
+                                   <a href="#" class="text-secondary p-0 me-1" title="View Details (Not implemented)"><i class="bi bi-eye-fill fs-5"></i></a>
+                                   <button class="btn btn-link text-warning p-0" disabled title="Deactivate (Not implemented)"><i class="bi bi-person-dash-fill fs-5"></i></button>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
-             <!-- Add Table Footer if needed -->
-             <div class="table-footer">
-                 <span>Showing <?php echo count($approved_volunteers); ?> entries</span>
+             <!-- Table Footer -->
+             <div class="d-flex justify-content-between align-items-center mt-2">
+                 <small class="text-muted">Showing <?php echo count($approved_volunteers); ?> approved <?php echo (count($approved_volunteers) === 1) ? 'volunteer' : 'volunteers'; ?></small>
              </div>
         <?php endif; ?>
     </div>
 </div>
 
-<?php require_once 'includes/admin_footer.php'; ?>
+<?php require_once 'includes/admin_footer.php'; // Includes closing tags and Bootstrap JS ?>

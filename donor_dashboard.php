@@ -77,73 +77,123 @@ try {
 
 <?php include 'includes/header.php'; ?>
 
-<div class="container dashboard-container">
-    <h2>Welcome, <?php echo htmlspecialchars($_SESSION['first_name']); ?>! (Donor Dashboard)</h2>
+<div class="container mt-4 mb-5"> <!-- Bootstrap Container -->
+    <h2 class="mb-4">Welcome, <?php echo htmlspecialchars($_SESSION['first_name']); ?>! (Donor)</h2>
 
+    <!-- Display Feedback Messages -->
     <?php if (!empty($errors)): ?>
-        <div class="error-message">
-            <?php foreach ($errors as $error): ?><p><?php echo htmlspecialchars($error); ?></p><?php endforeach; ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Error!</strong>
+            <ul>
+                <?php foreach ($errors as $error): ?>
+                    <li><?php echo htmlspecialchars($error); ?></li>
+                <?php endforeach; ?>
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     <?php endif; ?>
     <?php if ($success_message): ?>
-        <div class="success-message"><p><?php echo htmlspecialchars($success_message); ?></p></div>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <?php echo htmlspecialchars($success_message); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     <?php endif; ?>
 
-    <!-- List New Donation Form -->
-    <div class="dashboard-box">
-        <h3>List a New Food Donation</h3>
-        <form action="donor_dashboard.php" method="POST">
-            <div class="form-group">
-                <label for="food_description">Food Description (Type, Allergens, Condition):</label>
-                <textarea id="food_description" name="food_description" required></textarea>
-            </div>
-            <div class="form-group">
-                <label for="quantity">Quantity (e.g., 5 meals, 1 box, 10 kg):</label>
-                <input type="text" id="quantity" name="quantity">
-            </div>
-            <div class="form-group">
-                <label for="pickup_address">Pickup Address:</label>
-                <textarea id="pickup_address" name="pickup_address" required><?php echo htmlspecialchars($default_address); ?></textarea>
-                 <small>Please provide the full address for pickup.</small>
-            </div>
-             <div class="form-group">
-                <label for="pickup_time_preference">Pickup Time Preference (e.g., Weekdays 9am-5pm):</label>
-                <input type="text" id="pickup_time_preference" name="pickup_time_preference">
-            </div>
-            <button type="submit" name="submit_donation" class="form-button">List Donation</button>
-        </form>
+    <!-- List New Donation Form Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="bi bi-gift-fill me-2"></i>List a New Food Donation</h5>
+        </div>
+        <div class="card-body">
+            <form action="donor_dashboard.php" method="POST">
+                <div class="mb-3">
+                    <label for="food_description" class="form-label">Food Description <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="food_description" name="food_description" rows="3" required placeholder="e.g., 5 Sandwiches (Chicken), 2 Boxes Pasta (uncooked), 1 Tray Lasagna (cooked today) - Include type, quantity, allergens, condition..."></textarea>
+                     <div class="form-text">Be descriptive! This helps volunteers understand the donation.</div>
+                </div>
+                 <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="quantity" class="form-label">Quantity Estimate</label>
+                        <input type="text" class="form-control" id="quantity" name="quantity" placeholder="e.g., 5 meals, 1 box, 10 kg">
+                    </div>
+                     <div class="col-md-6 mb-3">
+                         <label for="pickup_time_preference" class="form-label">Pickup Time Preference</label>
+                        <input type="text" class="form-control" id="pickup_time_preference" name="pickup_time_preference" placeholder="e.g., Weekdays 9am-5pm, Anytime today">
+                     </div>
+                 </div>
+                <div class="mb-3">
+                    <label for="pickup_address" class="form-label">Full Pickup Address <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="pickup_address" name="pickup_address" rows="2" required><?php echo htmlspecialchars($default_address); ?></textarea>
+                    <div class="form-text">Provide the complete address where the volunteer should collect the food.</div>
+                </div>
+                <button type="submit" name="submit_donation" class="btn btn-success"><i class="bi bi-check-circle-fill me-2"></i>Submit Donation</button>
+            </form>
+        </div>
     </div>
 
-    <!-- View Existing Donations -->
-    <div class="dashboard-box">
-        <h3>Your Donation History</h3>
-        <?php if (empty($donations)): ?>
-            <p>You have not listed any donations yet.</p>
-        <?php else: ?>
-            <ul class="donation-list">
-                <?php foreach ($donations as $donation): ?>
-                    <li>
-                        <div>
-                            <strong><?php echo htmlspecialchars($donation['food_description']); ?></strong>
-                             (<?php echo htmlspecialchars($donation['quantity'] ?: 'N/A'); ?>) -
-                            <small>Listed: <?php echo date("M d, Y H:i", strtotime($donation['created_at'])); ?></small>
-                            <?php if($donation['assigned_volunteer_id']) echo " <small>(Volunteer Assigned)</small>"; ?>
-                        </div>
-                        <span class="donation-status status-<?php echo htmlspecialchars($donation['status']); ?>">
-                            <?php echo ucfirst(htmlspecialchars($donation['status'])); ?>
-                        </span>
-                         <!-- Add Cancel/Edit buttons here if needed, requires more PHP logic -->
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        <?php endif; ?>
+    <!-- View Existing Donations Card -->
+    <div class="card shadow-sm">
+        <div class="card-header">
+             <h5 class="mb-0"><i class="bi bi-list-task me-2"></i>Your Donation History</h5>
+        </div>
+        <div class="card-body p-0"> <!-- Remove padding for table flush -->
+            <?php if (empty($donations)): ?>
+                <p class="text-center text-muted p-3">You have not listed any donations yet.</p>
+            <?php else: ?>
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm mb-0 align-middle"> <!-- Bootstrap Table -->
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Description</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Listed On</th>
+                                <th scope="col">Status</th>
+                                <th scope="col" class="text-center">Volunteer</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($donations as $donation):
+                                // Determine badge color based on status
+                                $status_class = 'secondary'; // Default
+                                switch ($donation['status']) {
+                                    case 'pending': $status_class = 'warning text-dark'; break;
+                                    case 'assigned': $status_class = 'info text-dark'; break;
+                                    case 'collected': $status_class = 'primary'; break;
+                                    case 'delivered': $status_class = 'success'; break;
+                                    case 'cancelled': $status_class = 'danger'; break;
+                                }
+                            ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars(mb_strimwidth($donation['food_description'], 0, 60, "...")); ?></td>
+                                    <td><?php echo htmlspecialchars($donation['quantity'] ?: '-'); ?></td>
+                                    <td><small><?php echo date("M d, Y H:i", strtotime($donation['created_at'])); ?></small></td>
+                                    <td>
+                                        <span class="badge bg-<?php echo $status_class; ?>"><?php echo ucfirst(htmlspecialchars($donation['status'])); ?></span>
+                                    </td>
+                                    <td class="text-center">
+                                        <?php if($donation['assigned_volunteer_id']): ?>
+                                            <i class="bi bi-person-check-fill text-success" title="Volunteer Assigned"></i>
+                                        <?php else: ?>
+                                            <i class="bi bi-hourglass-split text-muted" title="Waiting for Volunteer"></i>
+                                        <?php endif; ?>
+                                         <!-- Add Cancel button here if status allows -->
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </div>
+         <!-- Optional Card Footer for pagination or actions -->
+         <!-- <div class="card-footer text-muted text-center"> ... </div> -->
     </div>
 
-     <div class="dashboard-box">
-        <h3>Account</h3>
-        <p><a href="#">Edit Profile</a> | <a href="logout.php">Logout</a></p> <!-- Link to profile edit page -->
-     </div>
+     <!-- Account Actions -->
+     <!-- <div class="mt-4 text-center">
+        <a href="#" class="btn btn-outline-secondary btn-sm">Edit Profile</a>
+     </div> -->
 
-</div>
+</div> <!-- /.container -->
 
-<?php include 'includes/footer.php'; ?>
+<?php require_once 'includes/footer.php'; ?>
