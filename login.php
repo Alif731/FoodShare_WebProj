@@ -73,6 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 
 <?php include 'includes/header.php'; ?>
+<?php include 'includes/forgot_password.php'; ?>
 
 <div class="form-container">
     <h2>Login to Your Account</h2>
@@ -94,7 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
         <button type="submit" class="form-button">Login</button>
         <p class="form-link">Don't have an account? <a href="donor_register.php">Register as Donor</a> | <a href="volunteer_register.php">Register as Volunteer</a></p>
-        <p class="form-link"><a href="#">Forgot Password?</a></p> <!-- Add password reset functionality later -->
+        <p class="form-link"><a href="forgot_password.php">Forgot Password?</a></p> <!-- Add password reset functionality  -->
 
     </form>
 </div>

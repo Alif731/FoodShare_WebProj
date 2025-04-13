@@ -1,3 +1,25 @@
+// Scroll to top functionality
+function scrollToHeader() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
+// Show/hide scroll button based on scroll position
+window.addEventListener('scroll', function() {
+    const scrollBtn = document.getElementById('scrollToTopBtn');
+    
+    // Check if we're near the bottom of the page
+    if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 100) {
+        scrollBtn.classList.remove('hidden');
+    } else {
+        scrollBtn.classList.add('hidden');
+    }
+});
+
+
+
 document.addEventListener('DOMContentLoaded', () => {
     const counters = document.querySelectorAll('.stat-item .count');
     const speed = 200; // Lower number = faster animation
